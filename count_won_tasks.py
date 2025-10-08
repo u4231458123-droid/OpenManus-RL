@@ -133,7 +133,7 @@ def print_statistics(stats: Dict[str, Any], verbose: bool = False):
 
 def main():
     parser = argparse.ArgumentParser(description='统计 task_summary.json 文件中 won=true 的任务数量')
-    parser.add_argument('--folder', default='experiments/table2/webshop_qwen3-8b_self_refine_maxtry5_env50_start1_20250923_172036', help='要统计的文件夹路径')
+    parser.add_argument('--folder', default='experiments/table2/webshop_qwen3-8b_self_refine_maxtry5_env50_start1_20250923_222810', help='要统计的文件夹路径')
     parser.add_argument('--verbose', action='store_true', help='显示详细信息')
     
     args = parser.parse_args()

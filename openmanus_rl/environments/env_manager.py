@@ -429,13 +429,16 @@ def make_envs(config):
         ])
         
         # Build environments
+        tool_llm_config = getattr(config.env, 'tool_llm_config', None)
+
         _envs = build_tool_use_envs(
             tasks_data=tasks_data,
             available_tools=available_tools,
             seed=config.env.seed,
             env_num=config.data.train_batch_size,
             group_n=group_n,
-            is_train=True
+            is_train=True,
+            tool_llm_config=tool_llm_config,
         )
         _val_envs = build_tool_use_envs(
             tasks_data=tasks_data,
@@ -443,7 +446,8 @@ def make_envs(config):
             seed=config.env.seed + 1000,
             env_num=config.data.val_batch_size,
             group_n=1,
-            is_train=False
+            is_train=False,
+            tool_llm_config=tool_llm_config,
         )
         
         projection_f = partial(tool_use_projection)

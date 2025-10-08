@@ -56,7 +56,13 @@ def timeout(seconds):
 class Python_Code_Generator_Tool(BaseTool):
     require_llm_engine = True
 
-    def __init__(self, model_string="gpt-4o-mini"):
+    def __init__(
+        self,
+        model_string: str = "gpt-4o-mini",
+        base_url: str | None = None,
+        api_key: str | None = None,
+        temperature: float = 0.0,
+    ):
         super().__init__(
             tool_name="Python_Code_Generator_Tool",
             tool_description="A tool that generates and executes simple Python code snippets for basic arithmetical calculations and math-related problems. The generated code runs in a highly restricted environment with only basic mathematical operations available.",
@@ -101,7 +107,17 @@ class Python_Code_Generator_Tool(BaseTool):
             }
         )
         print(f"Initializing Python_Code_Generator_Tool with model_string: {model_string}")
-        self.llm_engine = create_llm_engine(model_string=model_string, is_multimodal=False) if model_string else None
+        self.llm_engine = (
+            create_llm_engine(
+                model_string=model_string,
+                is_multimodal=False,
+                base_url=base_url,
+                api_key=api_key,
+                temperature=temperature,
+            )
+            if model_string
+            else None
+        )
 
     @staticmethod
     def preprocess_code(code):

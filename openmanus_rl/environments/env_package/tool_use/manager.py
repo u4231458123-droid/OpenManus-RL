@@ -23,6 +23,7 @@ class ToolUseEnvironmentManager(EnvironmentManagerBase):
         self.ground_truths = []
         self.step_counts = []
         self.task_completed = []
+        self.task_success = []
         self.env_step_counts = defaultdict(int)  # For debugger feedback tracking
         
     def reset(self, task_indices: Optional[List[int]] = None):
@@ -37,7 +38,8 @@ class ToolUseEnvironmentManager(EnvironmentManagerBase):
         batch_size = len(self.current_tasks)
         self.step_counts = [0] * batch_size
         self.task_completed = [False] * batch_size
-        
+        self.task_success = [False] * batch_size
+
         # Reset env_step_counts for debugger
         for i in range(batch_size):
             self.env_step_counts[i] = 0
@@ -64,23 +66,32 @@ class ToolUseEnvironmentManager(EnvironmentManagerBase):
         for i, (action, valid) in enumerate(zip(actions, valids)):
             if self.task_completed[i]:
                 observations.append("Task completed.")
-                infos.append({'is_action_valid': True, 'won': True})
+                infos.append({'is_action_valid': True, 'won': self.task_success[i]})
                 continue
                 
             # Process action
             obs, info = self._process_action(action, i)
             observations.append(obs)
-            
+
             # Check completion
             if self._is_completion_action(action):
+                is_correct = self._evaluate_answer(action, i)
+                self.task_success[i] = is_correct
                 self.task_completed[i] = True
                 dones[i] = True
+                evaluation_feedback = (
+                    "\n\nEvaluation: final answer matches the ground truth."
+                    if is_correct
+                    else "\n\nEvaluation: final answer does not match the ground truth."
+                )
+                observations[-1] = obs + evaluation_feedback
             elif self.step_counts[i] >= self.config.env.max_steps:
                 obs += "\n\nMaximum steps reached. Please provide your final answer in <answer></answer> tags."
                 dones[i] = True
+                observations[-1] = obs
                 
             info['is_action_valid'] = to_numpy(valid)
-            info['won'] = self.task_completed[i]
+            info['won'] = self.task_success[i]
             info['step_count'] = self.step_counts[i]
             infos.append(info)
         
@@ -133,35 +144,85 @@ class ToolUseEnvironmentManager(EnvironmentManagerBase):
     def _is_completion_action(self, action: str) -> bool:
         """Check if action indicates task completion"""
         return action.startswith("FINAL_ANSWER:") or "<answer>" in action
+
+    def _evaluate_answer(self, action: str, batch_idx: int) -> bool:
+        """Return True if the submitted answer matches the ground truth."""
+        predicted = self._extract_answer_text(action)
+        ground_truth = self.ground_truths[batch_idx]
+        return self._normalize_answer(predicted) == self._normalize_answer(ground_truth)
+
+    @staticmethod
+    def _extract_answer_text(action: str) -> str:
+        """Extract the textual answer from a completion action."""
+        if action.startswith("FINAL_ANSWER:"):
+            return action.split("FINAL_ANSWER:", 1)[1].strip()
+
+        match = re.search(r"<answer>(.*?)</answer>", action, re.DOTALL)
+        if match:
+            return match.group(1).strip()
+        return action.strip()
+
+    @staticmethod
+    def _normalize_answer(text: str) -> str:
+        """Normalize free-form text for string comparison."""
+        normalized = re.sub(r"\s+", " ", text).strip().lower()
+        normalized = normalized.strip(".,!?:;\"")
+        return normalized
         
     def build_text_obs(self, observations: List[str] = None, init: bool = False) -> List[str]:
         """Build text observations for agent"""
         batch_size = len(self.current_tasks)
         postprocess_text_obs = []
         
+        history_length_cfg = getattr(self.config.env, "history_length", 0)
+        max_steps = getattr(self.config.env, "max_steps", None)
+
+        if not init and history_length_cfg > 0:
+            memory_contexts, valid_lens = self.memory.fetch(
+                history_length_cfg,
+                obs_key="text_obs",
+                action_key="action",
+            )
+        else:
+            memory_contexts = ["" for _ in range(batch_size)]
+            valid_lens = [0 for _ in range(batch_size)]
+
         for i in range(batch_size):
-            # Determine which step the agent is about to take for debugger feedback
-            debugger_feedback = ""
             current_step_index = self.env_step_counts.get(i, 0)
             debugger_feedback = self.get_debugger_feedback(i, current_step_index)
             persistent_guidance = self.get_persistent_guidance(i, current_step_index)
-            
-            if init or self.config.env.history_length <= 0:
+
+            current_obs = observations[i] if observations else "Continue with your task."
+            should_use_last_step = (
+                not init
+                and not self.task_completed[i]
+                and max_steps is not None
+                and max_steps > 0
+                and self.step_counts[i] >= max_steps - 1
+            )
+
+            if init:
                 obs = TOOL_USE_TEMPLATE_NO_HIS.format(
                     task_description=self.current_tasks[i],
                     available_tools=self.tool_metadata,
                     current_observation="Start working on the task."
                 )
-            else:
-                # Get history
-                memory_contexts, valid_lens = self.memory.fetch(
-                    self.config.env.history_length,
-                    obs_key="text_obs", 
-                    action_key="action"
+            elif should_use_last_step:
+                obs = TOOL_USE_TEMPLATE_LAST_STEP.format(
+                    task_description=self.current_tasks[i],
+                    step_count=self.step_counts[i],
+                    history_length=valid_lens[i],
+                    action_history=memory_contexts[i],
+                    current_step=self.step_counts[i] + 1,
+                    current_observation=current_obs,
                 )
-                
-                current_obs = observations[i] if observations else "Continue with your task."
-                
+            elif history_length_cfg <= 0:
+                obs = TOOL_USE_TEMPLATE_NO_HIS.format(
+                    task_description=self.current_tasks[i],
+                    available_tools=self.tool_metadata,
+                    current_observation=current_obs,
+                )
+            else:
                 obs = TOOL_USE_TEMPLATE.format(
                     task_description=self.current_tasks[i],
                     step_count=self.step_counts[i],

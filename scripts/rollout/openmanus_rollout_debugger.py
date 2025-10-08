@@ -330,6 +330,21 @@ class LLMDebugger:
                 self.client = OpenAI(
                     api_key=key,
                 )
+
+        retry_delay_value = os.getenv("DEBUGGER_RETRY_BASE_DELAY",
+                                      os.getenv("ROLLOUT_RETRY_BASE_DELAY", "5"))
+        try:
+            retry_delay = float(retry_delay_value)
+        except (TypeError, ValueError):
+            retry_delay = 5.0
+        if retry_delay <= 0:
+            retry_delay = 5.0
+        self.retry_delay_seconds = retry_delay
+
+        max_retry_env = os.getenv("DEBUGGER_MAX_RETRIES",
+                                   os.getenv("ROLLOUT_MAX_RETRIES", "0"))
+        parsed_max = self._parse_positive_int(max_retry_env)
+        self.retry_max_attempts = parsed_max if parsed_max is not None else 10
         
         # Enhanced error type definitions aligned with AgentDebugger
         self.error_definitions = self._load_error_definitions()
@@ -341,6 +356,16 @@ class LLMDebugger:
             'system': ['step_limit', 'tool_execution_error', 'llm_limit', 'environment_error'],
             'others': ['others']
         }
+
+    @staticmethod
+    def _parse_positive_int(value: Optional[str]) -> Optional[int]:
+        if not value:
+            return None
+        try:
+            parsed = int(value)
+            return parsed if parsed > 0 else None
+        except (TypeError, ValueError):
+            return None
 
     def _log_llm_call(self, log_path: Optional[str], prompt: str, response_text: str) -> None:
         """Append a single LLM interaction record to a JSONL file."""
@@ -363,14 +388,46 @@ class LLMDebugger:
 
         messages.append({"role": "user", "content": prompt})
 
-        response = self.client.chat.completions.create(
-            model=self.model_name,
-            messages=messages,
-            temperature=self.temperature,
-            n=1,
-        )
+        response = self._chat_completion_with_retry(messages)
 
         return response.choices[0].message.content.strip()
+
+    def _chat_completion_with_retry(self, messages: List[Dict[str, Any]]):
+        attempt = 0
+        while True:
+            attempt += 1
+            try:
+                return self.client.chat.completions.create(
+                    model=self.model_name,
+                    messages=messages,
+                    temperature=self.temperature,
+                    n=1,
+                )
+            except KeyboardInterrupt:
+                raise
+            except Exception as exc:  # noqa: BLE001
+                logging.warning(
+                    "Debugger LLM call failed (attempt %d%s): %s",
+                    attempt,
+                    f"/{self.retry_max_attempts}" if self.retry_max_attempts else "",
+                    exc,
+                )
+                limit_reached = (
+                    self.retry_max_attempts is not None and
+                    attempt >= self.retry_max_attempts
+                )
+                if limit_reached:
+                    logging.error(
+                        "Debugger LLM call failed after %d attempts; giving up. Last error: %s",
+                        self.retry_max_attempts,
+                        exc,
+                    )
+                    raise
+                logging.info(
+                    "Retrying debugger LLM in %.1f seconds",
+                    self.retry_delay_seconds,
+                )
+                time.sleep(self.retry_delay_seconds)
 
     def _is_context_error(self, exc: Exception) -> bool:
         """Heuristically detect context-length style errors from providers."""
@@ -1555,9 +1612,16 @@ class EnvironmentFactory:
         return AlfWorldEnvironmentManager(envs, alfworld_projection, cfg)
     
     @staticmethod
-    def _build_gaia(tasks_data: List[Dict], available_tools: List[str], 
-                   env_num: int = 1, seed: int = 1, history_length: int = 2,
-                   max_steps: int = 30, **kwargs):
+    def _build_gaia(
+        tasks_data: List[Dict],
+        available_tools: List[str],
+        env_num: int = 1,
+        seed: int = 1,
+        history_length: int = 2,
+        max_steps: int = 30,
+        tool_llm_config: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ):
         """Build GAIA/Tool Use environment"""
         from openmanus_rl.environments.env_package.tool_use.projection import tool_use_projection
         from openmanus_rl.environments.env_package.tool_use.envs import build_tool_use_envs
@@ -1569,7 +1633,8 @@ class EnvironmentFactory:
             seed=seed,
             env_num=env_num,
             group_n=1,
-            is_train=True
+            is_train=True,
+            tool_llm_config=tool_llm_config,
         )
         
         cfg = SimpleNamespace(
@@ -3000,6 +3065,39 @@ def main():
         use_together=use_together_rollout,
     )
 
+    tool_llm_config: Dict[str, Any] = {
+        "model": args.model,
+        "temperature": args.temperature,
+    }
+
+    resolved_base_url = agent.base_url
+    if resolved_base_url:
+        tool_llm_config["base_url"] = resolved_base_url
+
+    using_together = False
+    if use_together_rollout:
+        using_together = True
+    elif resolved_base_url and "together" in resolved_base_url.lower():
+        using_together = True
+    elif args.base_url and "together" in args.base_url.lower():
+        using_together = True
+
+    if using_together:
+        together_base = resolved_base_url or os.environ.get(
+            "TOGETHER_API_BASE_URL",
+            "https://api.together.xyz/v1",
+        )
+        tool_llm_config["base_url"] = together_base
+        together_key = os.environ.get("TOGETHER_API_KEY")
+        if together_key:
+            tool_llm_config["api_key"] = together_key
+    else:
+        if args.base_url and "base_url" not in tool_llm_config:
+            tool_llm_config["base_url"] = args.base_url
+        openai_key = os.environ.get("OPENAI_API_KEY")
+        if openai_key:
+            tool_llm_config["api_key"] = openai_key
+
     value_agent = None
     override_value_agent = any(
         [
@@ -3163,6 +3261,7 @@ def main():
                 env_kwargs["tasks_data"] = gaia_tasks[start:end]
                 env_kwargs["available_tools"] = args.gaia_tools
                 env_kwargs["max_steps"] = args.max_steps
+                env_kwargs["tool_llm_config"] = tool_llm_config
                 
             elif args.env == "alfworld":
                 env_kwargs["alf_env_type"] = args.alf_env_type
@@ -3721,6 +3820,7 @@ def main():
             if args.env == "gaia":
                 common_kwargs["available_tools"] = args.gaia_tools
                 common_kwargs["max_steps"] = args.max_steps
+                common_kwargs["tool_llm_config"] = tool_llm_config
                 # Distribute trimmed tasks across envs
                 per_env_tasks: List[List[Dict]] = [[] for _ in range(pool_size)]
                 for k, task in enumerate(gaia_tasks or []):
@@ -4224,6 +4324,7 @@ def main():
                     env_kwargs["tasks_data"] = gaia_tasks
                     env_kwargs["available_tools"] = args.gaia_tools
                     env_kwargs["max_steps"] = args.max_steps
+                    env_kwargs["tool_llm_config"] = tool_llm_config
                 elif args.env == "alfworld":
                     env_kwargs["alf_env_type"] = args.alf_env_type
                     env_kwargs["is_train"] = bool(args.alfworld_is_train)

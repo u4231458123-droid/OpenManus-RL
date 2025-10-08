@@ -11,7 +11,13 @@ class PatchZoomerResponse(BaseModel):
 class Relevant_Patch_Zoomer_Tool(BaseTool):
     require_llm_engine = True
 
-    def __init__(self, model_string="gpt-4o"):
+    def __init__(
+        self,
+        model_string: str = "gpt-4o",
+        base_url: str | None = None,
+        api_key: str | None = None,
+        temperature: float = 0.0,
+    ):
         super().__init__(
             tool_name="Relevant_Patch_Zoomer_Tool",
             tool_description="A tool that analyzes an image, divides it into 5 regions (4 quarters + center), and identifies the most relevant patches based on a question. The returned patches are zoomed in by a factor of 2.",
@@ -44,7 +50,17 @@ class Relevant_Patch_Zoomer_Tool(BaseTool):
         }
 
         print(f"Initializing Patch Zoomer Tool with model: {model_string}")
-        self.llm_engine = create_llm_engine(model_string=model_string, is_multimodal=True) if model_string else None
+        self.llm_engine = (
+            create_llm_engine(
+                model_string=model_string,
+                is_multimodal=True,
+                base_url=base_url,
+                api_key=api_key,
+                temperature=temperature,
+            )
+            if model_string
+            else None
+        )
         
     def _save_patch(self, image_path, patch, save_path, zoom_factor=2):
         """Extract and save a specific patch from the image with 10% margins."""

@@ -5,7 +5,13 @@ from openmanus_rl.engines.factory import create_llm_engine
 class Generalist_Solution_Generator_Tool(BaseTool):
     require_llm_engine = True
 
-    def __init__(self, model_string="gpt-4o-mini"):
+    def __init__(
+        self,
+        model_string: str = "gpt-4o-mini",
+        base_url: str | None = None,
+        api_key: str | None = None,
+        temperature: float = 0.0,
+    ):
         super().__init__(
             tool_name="Generalist_Solution_Generator_Tool",
             tool_description="A generalized tool that takes query from the user as prompt, and answers the question step by step to the best of its ability. It can also accept an image.",
@@ -46,13 +52,22 @@ class Generalist_Solution_Generator_Tool(BaseTool):
             }
 
         )
-        self.model_string = model_string  
+        self.model_string = model_string
+        self.base_url = base_url
+        self.api_key = api_key
+        self.temperature = temperature
 
     def execute(self, prompt, image=None):
 
         print(f"Initializing Generalist Tool with model: {self.model_string}")
         multimodal = True if image else False
-        llm_engine = create_llm_engine(model_string=self.model_string, is_multimodal=multimodal)
+        llm_engine = create_llm_engine(
+            model_string=self.model_string,
+            is_multimodal=multimodal,
+            base_url=self.base_url,
+            api_key=self.api_key,
+            temperature=self.temperature,
+        )
 
         try:
             input_data = [prompt]

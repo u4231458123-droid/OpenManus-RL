@@ -52,7 +52,7 @@ Current Observation: {current_observation}
 Available Tools:
 {available_tools}
 
-You should first recall relevant past experiences and reason from our conversation history, then MUST summarize within <memory_recall> </memory_recall> tags like this:
+You should first recall relevant past experiences and reason from our conversation history, then MUST summarize within <memory> </memory> tags like this:
 
 <memory>
 Look at the past observations and actions from our conversation history.

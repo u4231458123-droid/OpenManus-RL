@@ -162,9 +162,16 @@ class EnvironmentFactory:
         return AlfWorldEnvironmentManager(envs, alfworld_projection, cfg)
     
     @staticmethod
-    def _build_gaia(tasks_data: List[Dict], available_tools: List[str], 
-                   env_num: int = 1, seed: int = 1, history_length: int = 2,
-                   max_steps: int = 30, **kwargs):
+    def _build_gaia(
+        tasks_data: List[Dict],
+        available_tools: List[str],
+        env_num: int = 1,
+        seed: int = 1,
+        history_length: int = 2,
+        max_steps: int = 30,
+        tool_llm_config: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ):
         """Build GAIA/Tool Use environment"""
 
         from openmanus_rl.environments.env_package.tool_use.projection import tool_use_projection
@@ -177,7 +184,8 @@ class EnvironmentFactory:
             seed=seed,
             env_num=env_num,
             group_n=1,
-            is_train=True
+            is_train=True,
+            tool_llm_config=tool_llm_config,
         )
         
         cfg = SimpleNamespace(

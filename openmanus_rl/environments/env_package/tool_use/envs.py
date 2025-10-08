@@ -184,10 +184,10 @@ class ToolManager:
             tool_info = f"""Tool: {tool_name}
 Description: {metadata.get('tool_description', 'No description')}
 Input Types: {metadata.get('input_types', 'No input types specified')}
-Usage: <tool_call>
+Usage: <action>
 tool: {tool_name}
 parameters: {{"param_name": "param_value"}}
-</tool_call>"""
+</action>"""
             
             metadata_lines.append(tool_info.strip())
         

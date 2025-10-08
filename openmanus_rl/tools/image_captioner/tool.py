@@ -5,7 +5,13 @@ from openmanus_rl.engines.factory import create_llm_engine
 class Image_Captioner_Tool(BaseTool):
     require_llm_engine = True
 
-    def __init__(self, model_string="gpt-4o-mini"):
+    def __init__(
+        self,
+        model_string: str = "gpt-4o-mini",
+        base_url: str | None = None,
+        api_key: str | None = None,
+        temperature: float = 0.0,
+    ):
         super().__init__(
             tool_name="Image_Captioner_Tool",
             tool_description="A tool that generates captions for images using OpenAI's multimodal model.",
@@ -30,7 +36,17 @@ class Image_Captioner_Tool(BaseTool):
             },
         )
         print(f"Initializing Image Captioner Tool with model: {model_string}")
-        self.llm_engine = create_llm_engine(model_string=model_string, is_multimodal=True) if model_string else None
+        self.llm_engine = (
+            create_llm_engine(
+                model_string=model_string,
+                is_multimodal=True,
+                base_url=base_url,
+                api_key=api_key,
+                temperature=temperature,
+            )
+            if model_string
+            else None
+        )
 
     def execute(self, image, prompt="Describe this image in detail."):
         try:
