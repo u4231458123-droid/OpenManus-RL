@@ -3,7 +3,25 @@ import { formatDate, formatReward, getStatusBadge } from '@/lib/utils'
 import { Activity, TrendingUp, CheckCircle2, XCircle, Clock } from 'lucide-react'
 import Link from 'next/link'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 async function getMetrics(): Promise<Metrics> {
+  // Check if supabase client is available
+  if (!supabase) {
+    console.warn('Supabase client not configured')
+    return {
+      total_rollouts: 0,
+      completed_rollouts: 0,
+      successful_rollouts: 0,
+      success_rate: 0,
+      average_reward: 0,
+      average_steps: 0,
+      rollouts: [],
+    }
+  }
+
   const { data: rollouts, error } = await supabase
     .from('rollouts')
     .select('*')
@@ -46,6 +64,12 @@ async function getMetrics(): Promise<Metrics> {
 }
 
 async function getTrainingRuns(): Promise<TrainingRun[]> {
+  // Check if supabase client is available
+  if (!supabase) {
+    console.warn('Supabase client not configured')
+    return []
+  }
+
   const { data, error } = await supabase
     .from('training_runs')
     .select('*')
