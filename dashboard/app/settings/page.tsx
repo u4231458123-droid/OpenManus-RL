@@ -25,7 +25,7 @@ export default function SettingsPage() {
     } else {
       localStorage.removeItem('nexify_openai_key');
     }
-    
+
     if (anthropicKey) {
       localStorage.setItem('nexify_anthropic_key', anthropicKey);
     } else {

@@ -16,16 +16,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-
+      
       // Load API keys from localStorage
       const storedKeys = {
-        openai: localStorage.getItem('nexify_openai_key'),
-        anthropic: localStorage.getItem('nexify_anthropic_key'),
+        openai: localStorage.getItem('nexify_openai_key') || undefined,
+        anthropic: localStorage.getItem('nexify_anthropic_key') || undefined,
       };
       setApiKeys(storedKeys);
-    });
-
-    // Listen for auth changes
+    });    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -35,7 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Clear keys on logout
         localStorage.removeItem('nexify_openai_key');
         localStorage.removeItem('nexify_anthropic_key');
-        setApiKeys({ openai: null, anthropic: null });
+        setApiKeys({ openai: undefined, anthropic: undefined });
       }
     });
 
