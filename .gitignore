@@ -1,4 +1,7 @@
 .env
+.env.local
+.env.*.local
+.env.supabase
 
 # virtual env
 venv/
@@ -41,3 +44,6 @@ nohup_logs_*/
 
 AGENTS.md
 CLAUDE.md
+
+# Supabase local
+.supabase/
