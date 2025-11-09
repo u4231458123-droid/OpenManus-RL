@@ -22,15 +22,20 @@ export default function SettingsPage() {
     // Save to localStorage
     if (openaiKey) {
       localStorage.setItem('nexify_openai_key', openaiKey);
+    } else {
+      localStorage.removeItem('nexify_openai_key');
     }
+    
     if (anthropicKey) {
       localStorage.setItem('nexify_anthropic_key', anthropicKey);
+    } else {
+      localStorage.removeItem('nexify_anthropic_key');
     }
 
     // Update store
     setApiKeys({
-      openai: openaiKey || null,
-      anthropic: anthropicKey || null,
+      openai: openaiKey || undefined,
+      anthropic: anthropicKey || undefined,
     });
 
     toast.success('API-Schlüssel erfolgreich gespeichert!');
