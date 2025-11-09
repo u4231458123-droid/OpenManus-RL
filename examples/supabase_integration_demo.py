@@ -12,9 +12,9 @@ from openmanus_rl.utils.supabase_storage import StorageManager
 
 def main():
     """Example training run with Supabase logging."""
-    
+
     print("🚀 Starting OpenManus-RL with Supabase Integration\n")
-    
+
     # 1. Create a training run
     print("📝 Creating training run...")
     training_run = TrainingRunManager.create_run(
@@ -29,7 +29,7 @@ def main():
         }
     )
     print(f"✅ Training run created: {training_run['id']}\n")
-    
+
     # 2. Create a rollout
     print("🎮 Starting rollout episode...")
     rollout = RolloutManager.create_rollout(
@@ -40,13 +40,13 @@ def main():
         metadata={"difficulty": "easy", "scene": "living_room_1"}
     )
     print(f"✅ Rollout created: {rollout['id']}\n")
-    
+
     # 3. Simulate some agent steps
     print("🤖 Simulating agent interactions...\n")
-    
+
     for step in range(1, 4):
         print(f"Step {step}:")
-        
+
         # Log agent state
         agent_state_id = RolloutManager.log_agent_state(
             rollout_id=rollout["id"],
@@ -57,7 +57,7 @@ def main():
             memory_summary=f"Previous steps: {step-1}"
         )
         print(f"  📍 Agent state logged: {agent_state_id}")
-        
+
         # Log a tool call
         RolloutManager.log_tool_call(
             agent_state_id=agent_state_id,
@@ -68,7 +68,7 @@ def main():
             execution_time_ms=120 + step * 10
         )
         print(f"  🔧 Tool call logged")
-        
+
         # Log reward
         reward_value = 0.5 if step < 3 else 5.0
         RolloutManager.log_reward(
@@ -79,7 +79,7 @@ def main():
             details={"reason": "exploration" if step < 3 else "task_complete"}
         )
         print(f"  🎁 Reward logged: {reward_value}\n")
-    
+
     # 4. Complete the rollout
     print("🏁 Completing rollout...")
     RolloutManager.complete_rollout(
@@ -89,7 +89,7 @@ def main():
         step_count=3
     )
     print("✅ Rollout completed!\n")
-    
+
     # 5. Update training run
     print("📊 Updating training run metrics...")
     TrainingRunManager.update_status(
@@ -102,7 +102,7 @@ def main():
         }
     )
     print("✅ Training run updated!\n")
-    
+
     # 6. Example: Upload a checkpoint (uncomment if you have a checkpoint file)
     # print("💾 Uploading model checkpoint...")
     # checkpoint_path = StorageManager.upload_checkpoint(
@@ -111,7 +111,7 @@ def main():
     #     checkpoint_file="path/to/checkpoint.pt"
     # )
     # print(f"✅ Checkpoint uploaded to: {checkpoint_path}\n")
-    
+
     print("=" * 50)
     print("🎉 Demo completed successfully!")
     print("=" * 50)
@@ -129,5 +129,5 @@ if __name__ == "__main__":
         print("❌ Error: .env.supabase not found!")
         print("Please create it with your Supabase credentials.")
         exit(1)
-    
+
     main()

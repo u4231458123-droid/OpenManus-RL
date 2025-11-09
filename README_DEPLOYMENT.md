@@ -134,11 +134,13 @@ See `examples/supabase_integration_demo.py` for a complete example.
 ## 📡 API Endpoints
 
 All Edge Functions are available at:
+
 ```
 https://jdjhkmenfkmbaeaskkug.supabase.co/functions/v1/
 ```
 
 ### Submit Rollout
+
 ```bash
 POST /submit-rollout
 {
@@ -149,6 +151,7 @@ POST /submit-rollout
 ```
 
 ### Log Agent State
+
 ```bash
 POST /log-agent-state
 {
@@ -161,6 +164,7 @@ POST /log-agent-state
 ```
 
 ### Complete Rollout
+
 ```bash
 POST /complete-rollout
 {
@@ -172,6 +176,7 @@ POST /complete-rollout
 ```
 
 ### Get Metrics
+
 ```bash
 GET /get-metrics?environment=alfworld&training_run_id=uuid
 ```
@@ -192,12 +197,12 @@ All tables include Row Level Security (RLS) policies and indexes for optimal per
 
 ## 🗄️ Storage Buckets
 
-| Bucket | Purpose | Size Limit |
-|--------|---------|------------|
-| `datasets` | Training/eval data | 50MB |
-| `model-checkpoints` | Model weights | 1GB |
-| `logs` | Training logs | 10MB |
-| `evaluation-results` | Eval outputs | 50MB |
+| Bucket               | Purpose            | Size Limit |
+| -------------------- | ------------------ | ---------- |
+| `datasets`           | Training/eval data | 50MB       |
+| `model-checkpoints`  | Model weights      | 1GB        |
+| `logs`               | Training logs      | 10MB       |
+| `evaluation-results` | Eval outputs       | 50MB       |
 
 ## 🔐 Security
 
@@ -215,11 +220,13 @@ All tables include Row Level Security (RLS) policies and indexes for optimal per
 ## 🔧 Development
 
 ### Run Example
+
 ```bash
 python examples/supabase_integration_demo.py
 ```
 
 ### Local Testing
+
 ```bash
 # Start local Supabase
 supabase start
@@ -237,6 +244,7 @@ GitHub Actions automatically deploys to Supabase on push to `main`:
 3. Upload datasets
 
 **Required Secrets**:
+
 - `SUPABASE_ACCESS_TOKEN`
 - `SUPABASE_SERVICE_ROLE_KEY`
 

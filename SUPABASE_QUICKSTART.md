@@ -24,6 +24,7 @@ pip install -r requirements.txt
 ### 2. Konfiguration
 
 Ihre `.env.supabase` ist bereits erstellt mit:
+
 ```
 SUPABASE_URL=https://jdjhkmenfkmbaeaskkug.supabase.co
 SUPABASE_ANON_KEY=sb_publishable_IJFhatPZZcKJfB8G5QC9Tg_TqP4nTcX
@@ -31,6 +32,7 @@ SUPABASE_SERVICE_ROLE_KEY=sbp_ed71b8e9dd2c7d7205d626b99ad63a218934e67c
 ```
 
 **WICHTIG**: Setzen Sie Ihr Datenbankpasswort:
+
 ```
 DATABASE_URL=postgresql://postgres:IHR_PASSWORD@db.jdjhkmenfkmbaeaskkug.supabase.co:5432/postgres
 ```
@@ -104,11 +106,13 @@ StorageManager.upload_checkpoint(
 ### Edge Function API
 
 Alle Edge Functions sind verfügbar unter:
+
 ```
 https://jdjhkmenfkmbaeaskkug.supabase.co/functions/v1/
 ```
 
 #### Rollout erstellen
+
 ```bash
 curl -X POST https://jdjhkmenfkmbaeaskkug.supabase.co/functions/v1/submit-rollout \
   -H "Content-Type: application/json" \
@@ -117,6 +121,7 @@ curl -X POST https://jdjhkmenfkmbaeaskkug.supabase.co/functions/v1/submit-rollou
 ```
 
 #### Metriken abrufen
+
 ```bash
 curl https://jdjhkmenfkmbaeaskkug.supabase.co/functions/v1/get-metrics?environment=alfworld
 ```
@@ -124,26 +129,31 @@ curl https://jdjhkmenfkmbaeaskkug.supabase.co/functions/v1/get-metrics?environme
 ## 📦 Erstelle Dateien
 
 ### Datenbank
+
 - ✅ `supabase/migrations/20241109_initial_schema.sql` - Hauptschema
 - ✅ `supabase/migrations/20241109_storage_buckets.sql` - Storage-Konfiguration
 
 ### Edge Functions
+
 - ✅ `supabase/functions/submit-rollout/` - Rollout-Submission
 - ✅ `supabase/functions/log-agent-state/` - Agent-State-Logging
 - ✅ `supabase/functions/complete-rollout/` - Rollout-Abschluss
 - ✅ `supabase/functions/get-metrics/` - Metriken-API
 
 ### Python-Integration
+
 - ✅ `openmanus_rl/utils/supabase_client.py` - Client-Setup
 - ✅ `openmanus_rl/utils/supabase_db.py` - Datenbank-Operationen
 - ✅ `openmanus_rl/utils/supabase_storage.py` - Storage-Verwaltung
 
 ### Deployment
+
 - ✅ `.github/workflows/supabase-deploy.yml` - GitHub Actions
 - ✅ `scripts/deploy_supabase.ps1` - Deployment-Script
 - ✅ `scripts/upload_datasets.py` - Dataset-Upload
 
 ### Dokumentation
+
 - ✅ `docs/SUPABASE_INTEGRATION.md` - Vollständige Dokumentation
 
 ## 🔐 GitHub Secrets
@@ -159,21 +169,25 @@ Für automatisches Deployment via GitHub Actions, fügen Sie diese Secrets hinzu
 ## 📚 Nächste Schritte
 
 1. **Datenbank-Schema anwenden**
+
    ```powershell
    supabase db push
    ```
 
 2. **Edge Functions deployen**
+
    ```powershell
    supabase functions deploy --project-ref jdjhkmenfkmbaeaskkug
    ```
 
 3. **Datasets hochladen**
+
    ```powershell
    python scripts/upload_datasets.py
    ```
 
 4. **Training-Scripts aktualisieren**
+
    - Integrieren Sie Supabase-Logging in Ihre Trainings-Loops
    - Verwenden Sie `TrainingRunManager` und `RolloutManager`
 
@@ -184,15 +198,19 @@ Für automatisches Deployment via GitHub Actions, fügen Sie diese Secrets hinzu
 ## 🛠️ Troubleshooting
 
 ### "Permission denied" beim Push
+
 Verwenden Sie HTTPS statt SSH:
+
 ```powershell
 git remote set-url origin https://github.com/u4231458123-droid/nexifyai-openmanus.git
 ```
 
 ### "Unauthorized" Fehler
+
 Überprüfen Sie Ihre API-Keys in `.env.supabase`
 
 ### Migrations-Fehler
+
 ```powershell
 supabase db reset
 supabase db push
@@ -201,6 +219,7 @@ supabase db push
 ## 📖 Weitere Dokumentation
 
 Siehe `docs/SUPABASE_INTEGRATION.md` für:
+
 - Detaillierte API-Referenz
 - Datenbankschema-Übersicht
 - Erweiterte Verwendungsbeispiele
