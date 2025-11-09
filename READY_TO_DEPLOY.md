@@ -9,6 +9,7 @@ Das komplette System ist fertig konfiguriert und bereit für Vercel-Hosting!
 ## 📦 Was wurde erstellt?
 
 ### 🎨 Next.js Dashboard (18 neue Dateien)
+
 ```
 dashboard/
 ├── app/
@@ -31,12 +32,14 @@ dashboard/
 ```
 
 ### ⚙️ Vercel Deployment
+
 ```
 vercel.json                     ✅ Vercel Configuration
 VERCEL_DEPLOYMENT.md            ✅ Deployment Guide
 ```
 
 ### 🗄️ Supabase Integration
+
 ```
 scripts/deploy_to_supabase.py   ✅ Deployment Script
 DEPLOYMENT_STATUS.md            ✅ Status Checklist (aktualisiert)
@@ -53,6 +56,7 @@ Klicken Sie auf den Button:
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fu4231458123-droid%2Fnexifyai-openmanus&project-name=openmanus-rl-dashboard&repository-name=openmanus-rl-dashboard&root-directory=dashboard&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY&envDescription=Supabase%20credentials%20for%20the%20dashboard&envLink=https%3A%2F%2Fgithub.com%2Fu4231458123-droid%2Fnexifyai-openmanus%2Fblob%2Fmain%2FVERCEL_DEPLOYMENT.md)
 
 **Dann:**
+
 1. Wählen Sie Ihren GitHub Account
 2. Geben Sie die Environment Variables ein:
    ```
@@ -103,24 +107,28 @@ vercel --prod
 ## 📊 Dashboard Features
 
 ✅ **Real-time Metriken**
+
 - Total Rollouts Counter
 - Success Rate Percentage
 - Average Reward Tracking
 - Average Steps per Episode
 
 ✅ **Training Runs Übersicht**
+
 - Alle laufenden Experimente
 - Status-Tracking (running, completed, failed)
 - Algorithm & Environment Info
 - Zeitstempel
 
 ✅ **Recent Rollouts**
+
 - Episode Numbers
 - Status Badges (mit Farbcodierung)
 - Reward & Step Count
 - Timestamps
 
 ✅ **Modern UI/UX**
+
 - Dark Mode Design
 - Responsive Layout
 - Gradient Backgrounds
@@ -157,6 +165,7 @@ python scripts/deploy_to_supabase.py
 **Oder manuell:**
 
 1. **Database Migrationen**
+
    - Gehen Sie zu: https://supabase.com/dashboard/project/jdjhkmenfkmbaeaskkug/sql/new
    - Kopieren Sie SQL aus `supabase/migrations/20241109_initial_schema.sql`
    - Führen Sie es aus
@@ -165,10 +174,10 @@ python scripts/deploy_to_supabase.py
 2. **Edge Functions**
    - Gehen Sie zu: https://supabase.com/dashboard/project/jdjhkmenfkmbaeaskkug/functions
    - Erstellen Sie 4 Functions:
-     * `submit-rollout`
-     * `log-agent-state`
-     * `complete-rollout`
-     * `get-metrics`
+     - `submit-rollout`
+     - `log-agent-state`
+     - `complete-rollout`
+     - `get-metrics`
    - Kopieren Sie Code aus `supabase/functions/[name]/index.ts`
 
 ---
@@ -176,19 +185,23 @@ python scripts/deploy_to_supabase.py
 ## 🧪 System testen
 
 ### 1. Dashboard testen
+
 Nach Vercel-Deployment:
+
 ```bash
 # Ihre Vercel URL öffnen
 https://your-project.vercel.app
 ```
 
 ### 2. API testen
+
 ```bash
 # Metriken abrufen
 curl https://jdjhkmenfkmbaeaskkug.supabase.co/functions/v1/get-metrics
 ```
 
 ### 3. Python Integration testen
+
 ```bash
 # Demo-Script ausführen
 python examples/supabase_integration_demo.py
@@ -234,13 +247,13 @@ OpenManus-RL/
 
 ## 🌐 URLs & Links
 
-| Ressource | URL |
-|-----------|-----|
-| **GitHub Repo** | https://github.com/u4231458123-droid/nexifyai-openmanus |
+| Ressource              | URL                                                         |
+| ---------------------- | ----------------------------------------------------------- |
+| **GitHub Repo**        | https://github.com/u4231458123-droid/nexifyai-openmanus     |
 | **Supabase Dashboard** | https://supabase.com/dashboard/project/jdjhkmenfkmbaeaskkug |
-| **Supabase API** | https://jdjhkmenfkmbaeaskkug.supabase.co |
-| **Vercel Dashboard** | https://vercel.com/dashboard |
-| **Deploy Button** | https://vercel.com/new/clone?repository-url=... |
+| **Supabase API**       | https://jdjhkmenfkmbaeaskkug.supabase.co                    |
+| **Vercel Dashboard**   | https://vercel.com/dashboard                                |
+| **Deploy Button**      | https://vercel.com/new/clone?repository-url=...             |
 
 ---
 
@@ -326,6 +339,6 @@ Bei Problemen:
 
 ---
 
-**Erstellt am**: 9. November 2025  
-**Version**: 2.0.0 - Production Ready  
+**Erstellt am**: 9. November 2025
+**Version**: 2.0.0 - Production Ready
 **Status**: 🟢 READY TO DEPLOY

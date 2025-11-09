@@ -5,6 +5,7 @@
 Ihr Code wurde erfolgreich zu `https://github.com/u4231458123-droid/anwendung` gepusht.
 
 **Statistik:**
+
 - 5463 Objekte übertragen
 - 136.43 MB Daten
 - Branch: `main`
@@ -23,16 +24,19 @@ Klicken Sie auf diesen Button:
 ### Option 2: Manuell über Vercel Dashboard
 
 1. **Gehen Sie zu Vercel:**
+
    ```
    https://vercel.com/new
    ```
 
 2. **Import Git Repository:**
+
    - Wählen Sie "Import Git Repository"
    - Wählen Sie: `u4231458123-droid/anwendung`
    - Klicken Sie auf "Import"
 
 3. **Projekt konfigurieren:**
+
    ```
    Project Name: openmanus-rl-dashboard
    Framework Preset: Next.js
@@ -40,9 +44,9 @@ Klicken Sie auf diesen Button:
    ```
 
 4. **Environment Variables hinzufügen:**
-   
+
    Klicken Sie auf "Add Environment Variables" und fügen Sie hinzu:
-   
+
    ```env
    NEXT_PUBLIC_SUPABASE_URL=https://jdjhkmenfkmbaeaskkug.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkamhrbWVuZmttYmFlYXNra3VnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzEwNzk3NTksImV4cCI6MjA0NjY1NTc1OX0.hZJPNOzSMDnH5IBZnEIXHg2vgwlP3LYqvTXZtI7vOW4
@@ -80,17 +84,21 @@ vercel --prod
 Nach dem Deployment konfigurieren Sie:
 
 ### 1. Git Integration
+
 - ✅ Auto-Deploy: ON
 - ✅ Production Branch: main
 - ✅ Preview Deployments: ON for all branches
 
 ### 2. Environment Variables
+
 Bereits gesetzt (siehe oben), aber verifizieren Sie:
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 
 ### 3. Build & Development Settings
+
 ```
 Framework Preset: Next.js
 Build Command: npm run build (oder: cd dashboard && npm run build)
@@ -101,8 +109,9 @@ Root Directory: dashboard
 ```
 
 ### 4. Domain Settings (Optional)
+
 - Fügen Sie eine Custom Domain hinzu
-- Vercel bietet auch eine kostenlose *.vercel.app Domain
+- Vercel bietet auch eine kostenlose \*.vercel.app Domain
 
 ---
 
@@ -119,16 +128,19 @@ Supabase: https://jdjhkmenfkmbaeaskkug.supabase.co
 ### Nächste Schritte:
 
 1. **Dashboard öffnen und testen:**
+
    ```
    https://[your-project].vercel.app
    ```
 
 2. **Supabase Migrationen anwenden:**
+
    ```powershell
    python scripts/deploy_to_supabase.py
    ```
 
 3. **Test-Daten erstellen:**
+
    ```powershell
    python examples/production_integration.py
    ```
@@ -148,6 +160,7 @@ Git Push → GitHub → Vercel → Automatisches Deployment
 ```
 
 **Beispiel:**
+
 ```powershell
 # Änderungen machen
 git add .
@@ -164,11 +177,11 @@ git push anwendung main
 
 Sie haben jetzt **3 GitHub Repositories** konfiguriert:
 
-| Repository | Verwendung | URL |
-|------------|------------|-----|
-| **origin** | Original OpenManus-RL | https://github.com/OpenManus/OpenManus-RL.git |
-| **supabase-deploy** | Erster Deployment-Test | https://github.com/u4231458123-droid/nexifyai-openmanus.git |
-| **anwendung** | 🎯 Production Repository | https://github.com/u4231458123-droid/anwendung |
+| Repository          | Verwendung               | URL                                                         |
+| ------------------- | ------------------------ | ----------------------------------------------------------- |
+| **origin**          | Original OpenManus-RL    | https://github.com/OpenManus/OpenManus-RL.git               |
+| **supabase-deploy** | Erster Deployment-Test   | https://github.com/u4231458123-droid/nexifyai-openmanus.git |
+| **anwendung**       | 🎯 Production Repository | https://github.com/u4231458123-droid/anwendung              |
 
 **Empfehlung:** Verwenden Sie `anwendung` für Ihr Production-Deployment!
 
@@ -177,6 +190,7 @@ Sie haben jetzt **3 GitHub Repositories** konfiguriert:
 ## ✅ Deployment Checkliste
 
 ### Pre-Deployment
+
 - [x] Code zu GitHub gepusht
 - [x] Repository ist public/accessible
 - [x] Dashboard-Code im `dashboard/` Verzeichnis
@@ -184,12 +198,14 @@ Sie haben jetzt **3 GitHub Repositories** konfiguriert:
 - [x] Supabase Backend konfiguriert
 
 ### Deployment
+
 - [ ] Vercel Projekt erstellt
 - [ ] Environment Variables gesetzt
 - [ ] Erstes Deployment erfolgreich
 - [ ] Dashboard erreichbar
 
 ### Post-Deployment
+
 - [ ] Supabase Migrationen angewendet
 - [ ] Test-Daten erstellt
 - [ ] Dashboard zeigt Daten an
@@ -202,6 +218,7 @@ Sie haben jetzt **3 GitHub Repositories** konfiguriert:
 ### Build Fehler: "Cannot find module"
 
 **Lösung:**
+
 ```powershell
 # Lokal testen
 cd dashboard
@@ -217,6 +234,7 @@ git push anwendung main
 ### Environment Variables nicht gesetzt
 
 **Lösung:**
+
 1. Gehen Sie zu Vercel Dashboard
 2. Ihr Projekt → Settings → Environment Variables
 3. Fügen Sie alle 3 Variables hinzu
@@ -225,6 +243,7 @@ git push anwendung main
 ### Root Directory Fehler
 
 **Lösung:**
+
 1. Vercel Dashboard → Settings → General
 2. Root Directory: `dashboard`
 3. Save
@@ -236,11 +255,11 @@ git push anwendung main
 
 Sobald deployed, haben Sie:
 
-✅ **Modern Dashboard** auf Vercel  
-✅ **Supabase Backend** mit PostgreSQL  
-✅ **GitHub Repository** mit Auto-Deploy  
-✅ **Real-time Monitoring** für Ihre ML Experimente  
-✅ **Production-Ready** System  
+✅ **Modern Dashboard** auf Vercel
+✅ **Supabase Backend** mit PostgreSQL
+✅ **GitHub Repository** mit Auto-Deploy
+✅ **Real-time Monitoring** für Ihre ML Experimente
+✅ **Production-Ready** System
 
 ---
 
@@ -253,13 +272,13 @@ Sobald deployed, haben Sie:
 
 ---
 
-**Status:** 🟢 READY TO DEPLOY  
-**Repository:** ✅ PUSHED  
-**Next Step:** 🚀 CLICK DEPLOY BUTTON  
+**Status:** 🟢 READY TO DEPLOY
+**Repository:** ✅ PUSHED
+**Next Step:** 🚀 CLICK DEPLOY BUTTON
 
 ---
 
-*Erstellt am: 9. November 2025*  
-*Repository: u4231458123-droid/anwendung*  
-*Branch: main*  
-*Files: 5463 objects, 136.43 MB*
+_Erstellt am: 9. November 2025_
+_Repository: u4231458123-droid/anwendung_
+_Branch: main_
+_Files: 5463 objects, 136.43 MB_

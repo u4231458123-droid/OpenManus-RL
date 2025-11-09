@@ -17,16 +17,19 @@ Click the button below to deploy directly to Vercel:
 ### Option 2: Manual Deployment
 
 1. **Push to GitHub** (already done ✅)
+
    ```bash
    git push origin main
    ```
 
 2. **Connect to Vercel**
+
    - Go to https://vercel.com/new
    - Import your repository: `u4231458123-droid/nexifyai-openmanus`
    - Select the repository
 
 3. **Configure Project**
+
    - Framework Preset: **Next.js**
    - Root Directory: `dashboard`
    - Build Command: `npm run build`
@@ -86,37 +89,42 @@ dashboard/
 ## Features
 
 ✅ **Real-time Dashboard**
+
 - Training runs overview
 - Rollout metrics and statistics
 - Success rate tracking
 - Average reward and step count
 
 ✅ **Modern UI**
+
 - Dark mode by default
 - Responsive design
 - Tailwind CSS styling
 - Lucide icons
 
 ✅ **Performance**
+
 - Server-side rendering (SSR)
 - Static generation where possible
 - Optimized for Vercel Edge Network
 
 ✅ **API Endpoints**
+
 - `/api/metrics` - Get training metrics
 - Supabase integration for data
 
 ## Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | Yes |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | Yes |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server-side) | Yes |
+| Variable                        | Description                             | Required |
+| ------------------------------- | --------------------------------------- | -------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Your Supabase project URL               | Yes      |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key                  | Yes      |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Supabase service role key (server-side) | Yes      |
 
 ## Vercel Configuration
 
 The `vercel.json` file includes:
+
 - Build configuration
 - API route handling
 - CORS headers
@@ -127,15 +135,18 @@ The `vercel.json` file includes:
 After deploying to Vercel:
 
 1. **Verify the deployment**
+
    - Visit your Vercel dashboard URL
    - Check all metrics are loading
 
 2. **Configure custom domain** (optional)
+
    - Go to Vercel project settings
    - Add your custom domain
    - Update DNS records
 
 3. **Enable analytics** (optional)
+
    - Vercel Analytics provides insights
    - Go to project settings > Analytics
 
@@ -148,6 +159,7 @@ After deploying to Vercel:
 ### Build Fails
 
 If build fails, check:
+
 - All environment variables are set
 - Node.js version compatibility (v18+ recommended)
 - Review build logs in Vercel dashboard
@@ -155,6 +167,7 @@ If build fails, check:
 ### Data Not Loading
 
 If dashboard shows no data:
+
 - Verify Supabase credentials
 - Check Supabase RLS policies
 - Ensure tables have data
@@ -162,6 +175,7 @@ If dashboard shows no data:
 ### API Errors
 
 If API endpoints fail:
+
 - Check environment variables
 - Verify Supabase service role key
 - Review API logs in Vercel
@@ -169,6 +183,7 @@ If API endpoints fail:
 ## Automatic Deployments
 
 Once connected to Vercel:
+
 - Every push to `main` triggers a production deployment
 - Pull requests create preview deployments
 - Instant rollback available in Vercel dashboard
