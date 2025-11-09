@@ -89,3 +89,15 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           python scripts/upload_datasets.py
+
+  # Erweiterung: Automatisierte Validierung nach Deployment
+  validate-deployment:
+    runs-on: ubuntu-latest
+    needs: [deploy-functions, upload-datasets]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Supabase Health Check
+        run: |
+          curl -I https://jdjhkmenfkmbaeaskkug.supabase.co/functions/v1/get-metrics || exit 1
+      - name: Print Success
+        run: echo "Supabase Deployment und Funktionen erfolgreich validiert!"

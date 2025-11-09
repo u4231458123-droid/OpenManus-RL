@@ -16,7 +16,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-      
+
       // Load API keys from localStorage
       const storedKeys = {
         openai: localStorage.getItem('nexify_openai_key') || undefined,
